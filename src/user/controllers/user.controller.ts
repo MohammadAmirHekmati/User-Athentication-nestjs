@@ -57,7 +57,7 @@ export class UserController {
     return await this.userService.getUserId(user_id)
   }
 
-  @RoleGuardDecorator(RoleEnum.ADMIN)
+  @RoleGuardDecorator(RoleEnum.USER)
   @UseGuards(JwtGuard,RoleGuard)
   @Put('promote/to/admin/:id')
   async promoteUserToAdmin(@Param('id') user_id:string):Promise<any>

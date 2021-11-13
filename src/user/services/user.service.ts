@@ -19,7 +19,6 @@ export class UserService {
     return  await this.userReposiory.userRegister(userRegisterDto);
   }
 
-
   async userLogin(userLoginDto:UserLoginDto):Promise<any>
   {
     const {password,username}=userLoginDto;
@@ -31,8 +30,6 @@ export class UserService {
     const token=await this.jwtService.sign(payload);
     return  token;
   }
-
-
 
   async getAllUser():Promise<UserEntity[]>
   {

@@ -17,7 +17,7 @@ export class UserEntity {
   password:string
 
 // {type:'enum', enum:RoleEnum,default:RoleEnum.USER}
-  @Column({type:'enum', enum:RoleEnum,default:RoleEnum.USER,nullable:true})
+  @Column({type:'enum',enum:RoleEnum,default:RoleEnum.USER})
   role:RoleEnum[]
 
   @Column({default:false})
