@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards, ValidationPipe } from '@nestjs/common';
 import { UserRegisterDto } from '../dto/user-register.dto';
 import { UserService } from '../services/user.service';
 import { UserLoginDto } from '../dto/user-login.dto';
@@ -16,7 +16,7 @@ export class UserController {
   }
 
   @Post('register')
-  async userRegister(@Body() userRegisterDto:UserRegisterDto):Promise<any>
+  async userRegister(@Body(ValidationPipe) userRegisterDto:UserRegisterDto):Promise<any>
   {
       return  await this.userService.userRegister(userRegisterDto)
   }
@@ -27,12 +27,6 @@ export class UserController {
       return await this.userService.userLogin(userLoginDto)
   }
 
-  @Get('getall')
-  async getAllUser():Promise<any>
-  {
-    return await this.userService.getAllUser()
-  }
-
   @RoleGuardDecorator(RoleEnum.USER,RoleEnum.ADMIN)
   @UseGuards(JwtGuard,RoleGuard)
   @Get('getall/paginate')
@@ -41,7 +35,7 @@ export class UserController {
     return await  this.userService.paginateGetAllUsers(paginationDto)
   }
 
-  @RoleGuardDecorator(RoleEnum.ADMIN)
+  @RoleGuardDecorator(RoleEnum.SUPERADMIN,RoleEnum.ADMIN,RoleEnum.SUPPORTER)
   @UseGuards(JwtGuard,RoleGuard)
   @Post('get/by/name')
   async getUserByUsername(@Body() username:string):Promise<any>
@@ -49,7 +43,7 @@ export class UserController {
     return await this.userService.getUserByUsername(username)
   }
 
-  @RoleGuardDecorator(RoleEnum.ADMIN)
+  @RoleGuardDecorator(RoleEnum.ADMIN,RoleEnum.SUPERADMIN,RoleEnum.SUPPORTER)
   @UseGuards(JwtGuard,RoleGuard)
   @Get('get/:id')
   async getUserByID(@Body('id') user_id:string):Promise<any>
@@ -57,12 +51,36 @@ export class UserController {
     return await this.userService.getUserId(user_id)
   }
 
-  @RoleGuardDecorator(RoleEnum.USER)
+  @RoleGuardDecorator(RoleEnum.SUPERADMIN)
   @UseGuards(JwtGuard,RoleGuard)
-  @Put('promote/to/admin/:id')
+  @Put('promote/user/to/admin/:id')
   async promoteUserToAdmin(@Param('id') user_id:string):Promise<any>
   {
     return await this.userService.promoteUserToAdmin(user_id)
+  }
+
+  @RoleGuardDecorator(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtGuard,RoleGuard)
+  @Put('promote/admin/to/user/:id')
+  async promoteAdminToUser(@Param('id') user_id:string):Promise<any>
+  {
+    return await this.userService.promoteAdminToUser(user_id)
+  }
+
+  @RoleGuardDecorator(RoleEnum.ADMIN,RoleEnum.SUPERADMIN)
+  @UseGuards(JwtGuard,RoleGuard)
+  @Put('promote/user/to/supporter/:id')
+  async promoteUserToSupporter(@Param('id') user_id:string):Promise<any>
+  {
+    return await this.userService.promoteUserToSupporter(user_id)
+  }
+
+  @RoleGuardDecorator(RoleEnum.ADMIN,RoleEnum.SUPERADMIN)
+  @UseGuards(RoleGuard,JwtGuard)
+  @Put('promote/supporter/to/user')
+  async promoteSupporterToUser(@Param('id') user_id:string):Promise<any>
+  {
+    return await this.userService.promoteSupporterToUser(user_id)
   }
 
 }

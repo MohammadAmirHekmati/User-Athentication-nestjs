@@ -10,14 +10,15 @@ export class UserEntity {
   @Column()
   username:string
 
-  @Column({nullable:true})
+  @Column()
   email:string
 
   @Column()
   password:string
 
 // {type:'enum', enum:RoleEnum,default:RoleEnum.USER}
-  @Column({type:'enum',enum:RoleEnum,default:RoleEnum.USER})
+// {type:'enum',enum:RoleEnum,default:RoleEnum.USER}
+  @Column('enum',{array:true,enum:RoleEnum,nullable:true})
   role:RoleEnum[]
 
   @Column({default:false})
