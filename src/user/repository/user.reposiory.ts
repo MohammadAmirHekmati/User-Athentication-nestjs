@@ -11,14 +11,19 @@ export class UserReposiory extends Repository<UserEntity>{
 
   async userRegister(userRegisterDto:UserRegisterDto):Promise<UserEntity>
   {
-    if(await this.findOne({where:{username:userRegisterDto.username}}))
+    const usernameWithTrim=await userRegisterDto.username.trim()
+
+    if(await this.findOne({where:{username:usernameWithTrim}}))
       throw new ConflictException()
 
     if (userRegisterDto.password!==userRegisterDto.confirmpassword)
       throw new BadRequestException('Password is not equal with confirm password')
 
+    if (usernameWithTrim.indexOf(' ')>=0)
+      throw new BadRequestException('Username contain with some spaces')
+
     const user=new UserEntity()
-    user.username=userRegisterDto.username.toLowerCase()
+    user.username=usernameWithTrim.toLowerCase()
     user.password=userRegisterDto.password
     user.email=userRegisterDto.email
     user.role=[RoleEnum.USER]

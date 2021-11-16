@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
   Put,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -21,6 +23,7 @@ import { PaginationDto } from '../dto/pagination.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { get } from 'http';
 
 @ApiTags('User')
 @Controller('user')
@@ -35,9 +38,18 @@ export class UserController {
   }
 
   @Post('login')
-  async userLogin(@Body() userLoginDto:UserLoginDto):Promise<any>
+  async userLogin(@Body(ValidationPipe) userLoginDto:UserLoginDto):Promise<any>
   {
       return await this.userService.userLogin(userLoginDto)
+  }
+
+
+  @RoleGuardDecorator(RoleEnum.SUPERADMIN)
+  @UseGuards(JwtGuard,RoleGuard)
+  @Get('test')
+  test()
+  {
+    return 'Ok'
   }
 
   @RoleGuardDecorator(RoleEnum.SUPPORTER,RoleEnum.ADMIN,RoleEnum.SUPERADMIN)
@@ -111,4 +123,23 @@ export class UserController {
   {
     return  await this.userService.uploadProfilePhoto(user_id,file)
   }
+
+  @Get('pictures/:filename')
+  async getPicture(@Param('filename') filename:string, @Res() res)
+  {
+    return await this.userService.getPicture(filename, res)
+  }
+
+  @Delete('profile/picture/:id')
+  async deleteUserProfile(@Param('id') user_id:string):Promise<any>
+  {
+    return await this.userService.deleteUserProfile(user_id)
+  }
+
+  @Delete('truncate/user/entity')
+  async truncateEntity():Promise<any>
+  {
+    return await  this.userService.truncateEntity()
+  }
+
 }

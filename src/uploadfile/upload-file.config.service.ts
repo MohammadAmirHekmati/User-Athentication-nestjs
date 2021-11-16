@@ -9,7 +9,8 @@ export class UploadFileConfigService implements MulterOptionsFactory{
         filename:(req,file,cb)=>{
           const name=file.originalname.split('.')[0]
           const fileExtention=file.originalname.split('.')[1]
-          const newFileName=name.split('').join('__')+Date.now()+'.'+fileExtention
+          const newFileName=name.split('')+'__'+Date.now()+'.'+fileExtention
+          file.originalname=newFileName
           cb(null,newFileName)
         }
       }),

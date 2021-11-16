@@ -9,7 +9,7 @@ export class PostgresConfigurationService implements TypeOrmOptionsFactory{
       password:'11538832',
       host:'localhost',
       port:5433,
-      database:'orm',
+      database:'user',
       entities:[__dirname+'/../**/*.entity{.ts,.js}'],
       synchronize:true
     }

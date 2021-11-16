@@ -1,4 +1,11 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UploadedFile } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  Param, Res,
+  UploadedFile,
+} from '@nestjs/common';
 import { UserRegisterDto } from '../dto/user-register.dto';
 import { UserReposiory } from '../repository/user.reposiory';
 import { UserEntity } from '../model/user.entity';
@@ -29,7 +36,7 @@ export class UserService {
       throw new NotFoundException();
     const roles=await user.role;
     const payload={username,roles:roles};
-    const token=await this.jwtService.sign(payload);
+    const token=await this.jwtService.sign(payload,{expiresIn:'2m'});
     return  token;
   }
 
@@ -141,9 +148,34 @@ export class UserService {
     if (!file)
       throw new BadRequestException()
 
-    user.profile=file.originalname
+    user.profile.push(file.originalname)
     const saved_user=await this.userReposiory.save(user)
     return saved_user
-
   }
+
+  async getPicture(filename:string, res)
+  {
+    if (!filename)
+      throw new BadRequestException()
+
+    const response=res.sendFile(process.cwd()+'/uploaded-file/'+filename)
+    return response
+  }
+
+  async deleteUserProfile(user_id:string):Promise<any>
+  {
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
+    if(!user)
+      throw new NotFoundException()
+    user.profile.pop()
+    const saved_user=await this.userReposiory.save(user)
+    return saved_user
+  }
+
+  async truncateEntity():Promise<string>
+  {
+    await this.userReposiory.clear()
+    return  'Truncate succesfully...!'
+  }
+
 }
