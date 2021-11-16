@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UploadedFile } from '@nestjs/common';
 import { UserRegisterDto } from '../dto/user-register.dto';
 import { UserReposiory } from '../repository/user.reposiory';
 import { UserEntity } from '../model/user.entity';
@@ -23,7 +23,7 @@ export class UserService {
   async userLogin(userLoginDto:UserLoginDto):Promise<any>
   {
     const {password,username}=userLoginDto;
-    const loweUserName=username.toLowerCase()
+    const loweUserName=username.toLowerCase();
     const user=await this.userReposiory.findOne({where:{username:loweUserName,password:password}});
     if(!user)
       throw new NotFoundException();
@@ -35,41 +35,41 @@ export class UserService {
 
   async updateUserProfile(user_id:string,updateUserProfileDto:UpdateUserProfileDto):Promise<UserEntity>
   {
-    return await this.userReposiory.updateUserProfile(user_id,updateUserProfileDto)
+    return await this.userReposiory.updateUserProfile(user_id,updateUserProfileDto);
   }
 
   async paginateGetAllUsers(paginationDto:PaginationDto):Promise<UserPaginateQueryType>
   {
-    const {limit,page}=paginationDto
-    const skip=(page-1)*limit
-    const take=limit
-    const total=await this.userReposiory.count()
-    const getAll=await this.userReposiory.find({skip:skip,take:take})
+    const {limit,page}=paginationDto;
+    const skip=(page-1)*limit;
+    const take=limit;
+    const total=await this.userReposiory.count();
+    const getAll=await this.userReposiory.find({skip:skip,take:take});
     const paginate_user:UserPaginateQueryType={
       data:getAll,
       limit:limit,
       page:page,
-      total:total
-    }
-    return await  paginate_user
+      total:total,
+    };
+    return await  paginate_user;
   }
 
   async getUserByUsername(username:string):Promise<UserEntity>
   {
-    const user=await this.userReposiory.findOne({where:{username:username}})
+    const user=await this.userReposiory.findOne({where:{username:username}});
 
     if(!user)
-      throw new NotFoundException('User not found')
+      throw new NotFoundException('User not found');
 
-    return user
+    return user;
   }
 
   async getUserId(user_id:string):Promise<UserEntity>
   {
-    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}});
       if (!user)
-        throw new NotFoundException()
-    return user
+        throw new NotFoundException();
+    return user;
   }
 
   async promoteUserToAdmin(user_id:string):Promise<UserEntity>
@@ -82,53 +82,68 @@ export class UserService {
       if (user.role.includes(RoleEnum.ADMIN))
         throw new ConflictException('User Aleardy is Admin');
 
-        user.role.push(RoleEnum.ADMIN)
+        user.role.push(RoleEnum.ADMIN);
 
-    const saved_user=await this.userReposiory.save(user)
-    return saved_user
+    const saved_user=await this.userReposiory.save(user);
+    return saved_user;
   }
 
   async promoteAdminToUser(user_id:string):Promise<UserEntity>
   {
-    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}});
     if(!user)
-    throw new NotFoundException('User NotFound')
+    throw new NotFoundException('User NotFound');
 
-    const index=user.role.indexOf(RoleEnum.ADMIN)
+    const index=user.role.indexOf(RoleEnum.ADMIN);
     if(!index)
-      throw new BadRequestException('User is not admin')
+      throw new BadRequestException('User is not admin');
 
-    user.role.splice(index,1)
-    const saved_user=await this.userReposiory.save(user)
-    return saved_user
+    user.role.splice(index,1);
+    const saved_user=await this.userReposiory.save(user);
+    return saved_user;
   }
 
   async promoteUserToSupporter(user_id:string):Promise<UserEntity>
   {
-    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}});
     if(!user)
-      throw new NotFoundException('User NotFound')
+      throw new NotFoundException('User NotFound');
 
     if (user.role.includes(RoleEnum.SUPPORTER))
-      throw new ConflictException('User Aleardy is supporter')
+      throw new ConflictException('User Aleardy is supporter');
 
-    user.role.push(RoleEnum.SUPPORTER)
-    const saved_user=await this.userReposiory.save(user)
-    return saved_user
+    user.role.push(RoleEnum.SUPPORTER);
+    const saved_user=await this.userReposiory.save(user);
+    return saved_user;
   }
 
   async promoteSupporterToUser(user_id:string):Promise<UserEntity>
   {
-    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}});
       if(!user)
-        throw new NotFoundException('User NotFound')
+        throw new NotFoundException('User NotFound');
 
     if (!user.role.includes(RoleEnum.SUPPORTER))
-      throw new BadRequestException('User is not Supporter')
+      throw new BadRequestException('User is not Supporter');
 
-    const index=user.role.indexOf(RoleEnum.SUPPORTER)
-    user.role.splice(index,1)
-    const saved=await this.userReposiory.save(user)
-    return saved
+    const index=user.role.indexOf(RoleEnum.SUPPORTER);
+    user.role.splice(index,1);
+    const saved=await this.userReposiory.save(user);
+    return saved;
+  }
+
+  async uploadProfilePhoto(user_id:string,file:Express.Multer.File):Promise<any>
+  {
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}});
+    if(!user)
+      throw new NotFoundException();
+
+    if (!file)
+      throw new BadRequestException()
+
+    user.profile=file.originalname
+    const saved_user=await this.userReposiory.save(user)
+    return saved_user
+
   }
 }

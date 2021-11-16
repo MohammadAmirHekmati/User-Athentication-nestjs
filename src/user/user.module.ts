@@ -7,11 +7,13 @@ import { JwtStrategy } from '../auth/strategy/jwt.strategy';
 import { JwtGuard } from '../auth/guard/jwt.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfiguartionService } from '../auth/jwt-configuartion.service';
+import { MulterModule } from '@nestjs/platform-express';
+import { UploadFileConfigService } from '../uploadfile/upload-file.config.service';
 
 @Module({
   imports:[TypeOrmModule.forFeature([UserReposiory]),
-  JwtModule.registerAsync({useClass:JwtConfiguartionService})
-  ],
+  JwtModule.registerAsync({useClass:JwtConfiguartionService}),
+  MulterModule.registerAsync({useClass:UploadFileConfigService})],
   providers:[UserService],
   controllers:[UserController]
 })

@@ -21,6 +21,9 @@ export class UserEntity {
   @Column('enum',{array:true,enum:RoleEnum,nullable:true})
   role:RoleEnum[]
 
+  @Column({nullable:true})
+  profile:string
+
   @Column({default:false})
   deleted:boolean
 }

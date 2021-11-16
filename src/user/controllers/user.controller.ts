@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UserRegisterDto } from '../dto/user-register.dto';
 import { UserService } from '../services/user.service';
 import { UserLoginDto } from '../dto/user-login.dto';
@@ -9,6 +20,7 @@ import { RoleEnum } from '../../auth/role.enum';
 import { PaginationDto } from '../dto/pagination.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('User')
 @Controller('user')
@@ -92,4 +104,11 @@ export class UserController {
     return await this.userService.promoteSupporterToUser(user_id)
   }
 
+
+  @Post('upload/profile/photo/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadProfilePhoto(@Param('id') user_id:string,@UploadedFile('file') file:Express.Multer.File):Promise<any>
+  {
+    return  await this.userService.uploadProfilePhoto(user_id,file)
+  }
 }
