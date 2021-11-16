@@ -8,6 +8,7 @@ import { RoleGuardDecorator } from '../../auth/decorator/role-guard.decorator';
 import { RoleEnum } from '../../auth/role.enum';
 import { PaginationDto } from '../dto/pagination.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -25,6 +26,14 @@ export class UserController {
   async userLogin(@Body() userLoginDto:UserLoginDto):Promise<any>
   {
       return await this.userService.userLogin(userLoginDto)
+  }
+
+  @RoleGuardDecorator(RoleEnum.SUPPORTER,RoleEnum.ADMIN,RoleEnum.SUPERADMIN)
+  @UseGuards(JwtGuard,RoleGuard)
+  @Post('update/profile/:id')
+  async updateUserProfile(@Param('id') user_id:string,@Body(ValidationPipe) updateUserProfileDto:UpdateUserProfileDto):Promise<any>
+  {
+    return await this.userService.updateUserProfile(user_id,updateUserProfileDto)
   }
 
   @RoleGuardDecorator(RoleEnum.USER,RoleEnum.ADMIN)

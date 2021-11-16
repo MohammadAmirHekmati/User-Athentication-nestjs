@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RoleEnum } from '../../auth/role.enum';
 import { PaginationDto } from '../dto/pagination.dto';
 import { UserPaginateQueryType } from '../query-type/user-paginate-query-type';
+import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -32,10 +33,9 @@ export class UserService {
     return  token;
   }
 
-  async getAllUser():Promise<UserEntity[]>
+  async updateUserProfile(user_id:string,updateUserProfileDto:UpdateUserProfileDto):Promise<UserEntity>
   {
-    const users=await this.userReposiory.find({where:{deleted:false}})
-    return users
+    return await this.userReposiory.updateUserProfile(user_id,updateUserProfileDto)
   }
 
   async paginateGetAllUsers(paginationDto:PaginationDto):Promise<UserPaginateQueryType>
