@@ -1,8 +1,9 @@
-import { CanActivate, ExecutionContext } from '@nestjs/common';
+import { Body, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { RoleEnum } from '../role.enum';
 import { Reflector } from '@nestjs/core';
 import { ROLES } from '../decorator/role-guard.decorator';
+import { query } from 'express';
 
 export class GetUserContext {
   username:string
@@ -22,6 +23,11 @@ export class RoleGuard implements CanActivate{
       return true
 
     const {user}:{user:GetUserContext}=context.switchToHttp().getRequest()
+    Body
+    header
+    query
+    ip
+    origibase
     const canActive=roles.some((role)=>user.roles?.includes(role))
 
     return canActive

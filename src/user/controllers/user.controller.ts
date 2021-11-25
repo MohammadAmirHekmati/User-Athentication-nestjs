@@ -142,4 +142,9 @@ export class UserController {
     return await  this.userService.truncateEntity()
   }
 
+  @Get('validate/user/email/:code')
+  async validateUserEmail(@Param('code') userCode:number):Promise<any>
+  {
+    return await this.userService.validateUserEmail(userCode)
+  }
 }

@@ -15,16 +15,20 @@ import { RoleEnum } from '../../auth/role.enum';
 import { PaginationDto } from '../dto/pagination.dto';
 import { UserPaginateQueryType } from '../query-type/user-paginate-query-type';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class UserService {
   constructor(private userReposiory:UserReposiory,
-              private jwtService:JwtService) {
+              private jwtService:JwtService,
+              private mailerService:MailerService) {
   }
 
   async userRegister(userRegisterDto:UserRegisterDto):Promise<UserEntity>
   {
-    return  await this.userReposiory.userRegister(userRegisterDto);
+    const registeredUser=await this.userReposiory.userRegister(userRegisterDto);
+
+    return
   }
 
   async userLogin(userLoginDto:UserLoginDto):Promise<any>
@@ -178,4 +182,21 @@ export class UserService {
     return  'Truncate succesfully...!'
   }
 
+  async sentValidationCodeToEmail(userEmailAddress:string):Promise<any>
+  {
+    const validationCodes=[1,2,3,4,5,6,7,8,9]
+    const randomElement = validationCodes[Math.floor(Math.random() * validationCodes.length)];
+    const sentEmailResult=await this.mailerService.sendMail({
+      to:userEmailAddress,
+      from: 'mamadtest1153@gmail.com',
+      subject: 'Hello dear user',
+      text: `there is yourvalidation code ${randomElement}`,
+    })
+
+    return randomElement
+  }
+
+  async validateUserEmail(userCode:number):Promise<any>
+  {
+  }
 }
