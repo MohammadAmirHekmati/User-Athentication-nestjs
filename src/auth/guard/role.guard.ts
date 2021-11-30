@@ -23,11 +23,7 @@ export class RoleGuard implements CanActivate{
       return true
 
     const {user}:{user:GetUserContext}=context.switchToHttp().getRequest()
-    Body
-    header
-    query
-    ip
-    origibase
+    
     const canActive=roles.some((role)=>user.roles?.includes(role))
 
     return canActive

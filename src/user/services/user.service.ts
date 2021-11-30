@@ -182,8 +182,9 @@ export class UserService {
     return  'Truncate succesfully...!'
   }
 
-  async sentValidationCodeToEmail(userEmailAddress:string):Promise<any>
+  async sentValidationCodeToEmail(user_id:string):Promise<any>
   {
+
     const validationCodes=[1,2,3,4,5,6,7,8,9]
     const randomElement = validationCodes[Math.floor(Math.random() * validationCodes.length)];
     const sentEmailResult=await this.mailerService.sendMail({
@@ -193,10 +194,8 @@ export class UserService {
       text: `there is yourvalidation code ${randomElement}`,
     })
 
-    return randomElement
+    return sentEmailResult
   }
 
-  async validateUserEmail(userCode:number):Promise<any>
-  {
-  }
+
 }

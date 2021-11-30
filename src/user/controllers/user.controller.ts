@@ -142,9 +142,9 @@ export class UserController {
     return await  this.userService.truncateEntity()
   }
 
-  @Get('validate/user/email/:code')
-  async validateUserEmail(@Param('code') userCode:number):Promise<any>
+  @Get('sent/email/to/user')
+  async sentEmailToUser(@Param('id') user_id:string):Promise<any>
   {
-    return await this.userService.validateUserEmail(userCode)
+    return await this.userService.sentValidationCodeToEmail(user_id)
   }
 }
