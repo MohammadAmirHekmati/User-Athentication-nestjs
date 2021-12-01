@@ -26,4 +26,7 @@ export class UserEntity {
 
   @Column({default:false})
   deleted:boolean
+
+  @Column({nullable:true})
+  verifycode:number
 }

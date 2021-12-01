@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  BadRequestException, Body,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -15,7 +15,8 @@ import { RoleEnum } from '../../auth/role.enum';
 import { PaginationDto } from '../dto/pagination.dto';
 import { UserPaginateQueryType } from '../query-type/user-paginate-query-type';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
-import { MailerService } from '@nestjs-modules/mailer';
+import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
+import { Cron, CronExpression, ScheduleModule, Timeout } from '@nestjs/schedule';
 
 @Injectable()
 export class UserService {
@@ -28,7 +29,7 @@ export class UserService {
   {
     const registeredUser=await this.userReposiory.userRegister(userRegisterDto);
 
-    return
+    return registeredUser
   }
 
   async userLogin(userLoginDto:UserLoginDto):Promise<any>
@@ -184,18 +185,41 @@ export class UserService {
 
   async sentValidationCodeToEmail(user_id:string):Promise<any>
   {
-
-    const validationCodes=[1,2,3,4,5,6,7,8,9]
-    const randomElement = validationCodes[Math.floor(Math.random() * validationCodes.length)];
-    const sentEmailResult=await this.mailerService.sendMail({
-      to:userEmailAddress,
-      from: 'mamadtest1153@gmail.com',
-      subject: 'Hello dear user',
-      text: `there is yourvalidation code ${randomElement}`,
-    })
-
-    return sentEmailResult
+    const validationCodes=[1,2,3,4,5,6,7,8,9,15,16,18,19,20,25,26,24,28]
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
+    const user_email:string=user.email
+    const randomNumber=validationCodes[Math.floor(Math.random() * validationCodes.length)]
+    const sentMail:ISendMailOptions={
+      from:'mamadtest1153@gmail.com',
+      to:user_email,
+      subject:'Verify Email Address',
+      text:`Hi This is Your Validation Code:  ${randomNumber}`
+    }
+    user.verifycode=randomNumber
+    const sentEmailToUser=await this.mailerService.sendMail(sentMail)
+    const saved_uuser=await this.userReposiory.save(user)
+    await this.deleteVerifyUserCode(user_id)
+    return sentEmailToUser
   }
 
+  @Timeout(60000)
+  async deleteVerifyUserCode(user_id:string):Promise<any>
+  {
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
+    user.verifycode=null
+    const saved_user=await this.userReposiory.save(user)
+  }
 
+  async verifyUserEmail(user_id:string,verify_code:number):Promise<any>
+  {
+    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
+      const verifyCode:number=user.verifycode
+      if (!verifyCode)
+        throw new BadRequestException()
+
+    if (verifyCode!==verify_code)
+      throw new BadRequestException('not match')
+
+    return 'Email Verification Was Successfully...!'
+  }
 }

@@ -6,10 +6,10 @@ export class SentMailConfigService implements MailerOptionsFactory{
       transport:{
         host:'smtp.gmail.com',
         port:'465',
-        secure:true,
+        secure:false,
         auth:{
           user:'mamadtest1153@gmail.com',
-          pass:'Amir11538832@'
+          pass:'11538832@'
         }
       }
     }

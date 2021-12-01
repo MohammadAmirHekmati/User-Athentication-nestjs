@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Post,
-  Put,
+  Put, Query,
   Res,
   UploadedFile,
   UseGuards,
@@ -24,6 +24,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { get } from 'http';
+import { IpControllGuard } from '../../auth/guard/ip-controll.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -44,8 +45,8 @@ export class UserController {
   }
 
 
-  @RoleGuardDecorator(RoleEnum.SUPERADMIN)
-  @UseGuards(JwtGuard,RoleGuard)
+
+  @UseGuards(IpControllGuard)
   @Get('test')
   test()
   {
@@ -63,7 +64,7 @@ export class UserController {
   @RoleGuardDecorator(RoleEnum.USER,RoleEnum.ADMIN)
   @UseGuards(JwtGuard,RoleGuard)
   @Get('getall/paginate')
-  async paginateGetAllUsers(@Body() paginationDto:PaginationDto):Promise<any>
+  async paginateGetAllUsers(@Query() paginationDto:PaginationDto):Promise<any>
   {
     return await  this.userService.paginateGetAllUsers(paginationDto)
   }
@@ -142,9 +143,15 @@ export class UserController {
     return await  this.userService.truncateEntity()
   }
 
-  @Get('sent/email/to/user')
+  @Get('sent/email/to/user/:id')
   async sentEmailToUser(@Param('id') user_id:string):Promise<any>
   {
     return await this.userService.sentValidationCodeToEmail(user_id)
+  }
+
+  @Post('sent/verification/code/:id')
+  async verifyUserEmail(@Param('id') user_id:string ,@Body() verify_code:number):Promise<any>
+  {
+    return await this.userService.verifyUserEmail(user_id, verify_code)
   }
 }
