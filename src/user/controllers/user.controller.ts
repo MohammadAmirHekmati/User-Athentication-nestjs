@@ -45,7 +45,6 @@ export class UserController {
   }
 
 
-
   @UseGuards(IpControllGuard)
   @Get('test')
   test()
@@ -153,5 +152,11 @@ export class UserController {
   async verifyUserEmail(@Param('id') user_id:string ,@Body() verify_code:number):Promise<any>
   {
     return await this.userService.verifyUserEmail(user_id, verify_code)
+  }
+
+  @Get('middleware/test')
+  async getMiddlewareTest():Promise<string>
+  {
+    return 'OK'
   }
 }

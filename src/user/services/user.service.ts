@@ -153,7 +153,8 @@ export class UserService {
     if (!file)
       throw new BadRequestException()
 
-    user.profile.push(file.originalname)
+      let userProfile=user.profile
+    userProfile.push(file.originalname)
     const saved_user=await this.userReposiory.save(user)
     return saved_user
   }
@@ -198,17 +199,9 @@ export class UserService {
     user.verifycode=randomNumber
     const sentEmailToUser=await this.mailerService.sendMail(sentMail)
     const saved_uuser=await this.userReposiory.save(user)
-    await this.deleteVerifyUserCode(user_id)
     return sentEmailToUser
   }
 
-  @Timeout(60000)
-  async deleteVerifyUserCode(user_id:string):Promise<any>
-  {
-    const user=await this.userReposiory.findOne({where:{id:user_id,deleted:false}})
-    user.verifycode=null
-    const saved_user=await this.userReposiory.save(user)
-  }
 
   async verifyUserEmail(user_id:string,verify_code:number):Promise<any>
   {
