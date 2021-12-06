@@ -23,7 +23,6 @@ import { PaginationDto } from '../dto/pagination.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { get } from 'http';
 import { IpControllGuard } from '../../auth/guard/ip-controll.guard';
 
 @ApiTags('User')
