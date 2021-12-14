@@ -1,0 +1,12 @@
+{
+  "db": {
+    "type":"postgres",
+    "username":"postgres",
+    "password":"11538832",
+    "host":"localhost",
+    "port":5433,
+    "database":"jwt-practice-new",
+    "autoLoadEntities": true,
+    "synchronize":true
+  }
+}

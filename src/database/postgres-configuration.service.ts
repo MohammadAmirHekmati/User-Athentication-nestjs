@@ -12,6 +12,7 @@ export class PostgresConfigurationService implements TypeOrmOptionsFactory{
       database:'jwt-practice-new',
       entities:[__dirname+'/../**/*.entity{.ts,.js}'],
       synchronize:true
+
     }
     return option
   }

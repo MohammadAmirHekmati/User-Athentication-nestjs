@@ -3,9 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
-  Put, Query,
+  Put,
+  Query,
   Res,
   UploadedFile,
   UseGuards,
@@ -43,6 +46,11 @@ export class UserController {
       return await this.userService.userLogin(userLoginDto)
   }
 
+  @Get('getall/:id')
+  async getAllUsers(@Param('id',new ParseIntPipe({errorHttpStatusCode:HttpStatus.NOT_FOUND})) id:number):Promise<any>
+  {
+    return await this.userService.getAllUsers(id)
+  }
 
   @UseGuards(IpControllGuard)
   @Get('test')
@@ -78,7 +86,7 @@ export class UserController {
   @RoleGuardDecorator(RoleEnum.ADMIN,RoleEnum.SUPERADMIN,RoleEnum.SUPPORTER)
   @UseGuards(JwtGuard,RoleGuard)
   @Get('get/:id')
-  async getUserByID(@Body('id') user_id:string):Promise<any>
+  async getUserByID(@Param('id') user_id:string):Promise<any>
   {
     return await this.userService.getUserId(user_id)
   }

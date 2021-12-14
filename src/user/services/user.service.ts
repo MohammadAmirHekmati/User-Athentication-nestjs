@@ -17,6 +17,9 @@ import { UserPaginateQueryType } from '../query-type/user-paginate-query-type';
 import { UpdateUserProfileDto } from '../dto/update-user-profile.dto';
 import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { Cron, CronExpression, ScheduleModule, Timeout } from '@nestjs/schedule';
+import {
+  ErrorsPoviderDontHaveAccess,
+} from '../../custom-exception/custom-exeption.handler';
 
 @Injectable()
 export class UserService {
@@ -75,6 +78,12 @@ export class UserService {
 
     return user;
   }
+
+  async getAllUsers(id:number):Promise<UserEntity[]>
+  {
+    return
+  }
+
 
   async getUserId(user_id:string):Promise<UserEntity>
   {
